@@ -2,7 +2,7 @@ const express = require('express')
 const path = require('path')
 const mysql = require('mysql2')
 const app = express();
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
 // Express middleware
 app.use(express.urlencoded({ extended: false }));
@@ -16,7 +16,18 @@ const db = mysql.createConnection(
       user: 'root',
      
       password: 'root',
-      database: 'movies_db'
+      database: 'company_db'
     },
-    console.log(`Connected to the movies_db database.`)
+    console.log(`Connected to the company_db database.`)
   );
+
+
+
+  
+
+//______________________
+// Adds a listener to port
+//_______________________
+  app.listen(PORT, () => {
+    console.log(`listening on http://localhost:${PORT}`);
+  })

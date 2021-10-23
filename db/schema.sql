@@ -1,4 +1,4 @@
- -- Sql script to create data base and create tables wit hrealtions using primary and foreign keys
+ -- Sql script to create data base and create tables with realtions using primary and foreign keys
 DROP DATABASE IF EXISTS company_db;
 CREATE DATABASE company_db;
 

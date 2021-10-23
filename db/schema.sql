@@ -1,4 +1,3 @@
-
  -- Sql script to create data base and create tables wit hrealtions using primary and foreign keys
 DROP DATABASE IF EXISTS company_db;
 CREATE DATABASE company_db;
@@ -11,7 +10,7 @@ CREATE TABLE department(
 
 );
 
-CREATE TABLE role (
+CREATE TABLE roles (
     id INT NOT NULL auto_increment PRIMARY KEY,
     department_id INT NOT NULL,
     title VARCHAR(30),
@@ -20,16 +19,14 @@ CREATE TABLE role (
 );
 
 CREATE TABLE employee(
-    id INT NOT NULL auto_increment PRIMARY KEY, 
-   	first_name VARCHAR(30),
-    last_name VARCHAR(30),
-    role_id INT NOT NULL,
-    foreign KEY (role_id)
-    REFERENCES role(id),
-    manager_id INT NOT NULL DEFAULT '1' references employee(id)
+   	id INT AUTO_INCREMENT PRIMARY KEY,
+	first_name VARCHAR(30) NOT NULL,
+	last_name VARCHAR(30) NOT NULL,
+	role_id INT,
+	manager_id INT,
+	FOREIGN KEY(role_id) REFERENCES roles(id),
+	FOREIGN KEY(manager_id) REFERENCES employee(id)
     );
-
-   
    
 
    

@@ -37,7 +37,7 @@ function BeginApp() {
           break;
         case "Add Employee":
           console.log("Adding Employee");
-          BeginApp();
+          addEmployee();
           break;
         case "View All Roles":
           console.log("Viewing all Roles");
@@ -69,24 +69,62 @@ function BeginApp() {
 }
 
 function allEmployees() {
-  db.query(`Select e.id, e.first_name as 'FIRST NAME', e.last_name AS 'LAST NAME' from employee e order by e.id`, (err,results) => {
-    if(err){
-      console.log(err);
-    } else {
-    console.table(results)
-    BeginApp()
+  db.query(
+    `SELECT e.id, e.first_name AS "First Name", e.last_name AS "Last Name", r.title, d.name AS "Department", r.salary AS "Salary" FROM employee e
+  INNER JOIN roles r ON r.id = e.role_id INNER JOIN department d ON d.id = r.department_id;`,
+    (err, results) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.table(results);
+        BeginApp();
+      }
     }
-  })
+  );
+}
+function addEmployee() {
+  db.query("SELECT title FROM roles", (err, results) => {
+    console.log(results);
+    if (err) throw err;
+ 
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "first_name",
+        message: "First Name of the employee you wish to add?",
+      },
+      {
+        type: "input",
+        name: "last_name",
+        message: "Last name of the employee you wish to add?",
+      },
+      {
+        type: "list",
+        name: "role",
+        message: "Role of this employee?",
+        choices: function () {
+          let array = results.map(choice => choice.title)
+          return array;
+        }
+      },
+      
+    ]).then((answers) => {
+      db.query(
+        `INSERT INTO employee(first_name, last_name, role_id) 
+         VALUES('${answers.first_name}', '${answers.last_name}',
+         (SELECT id FROM roles WHERE title = "${answers.role}"));`
+    )
+    })
   
+  });
 }
 
 // Connection to localhost company database with employee info.
-
 
 //______________________
 // Adds a listener to port
 //_______________________
 app.listen(PORT, () => {});
-
 
 BeginApp();

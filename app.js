@@ -9,6 +9,17 @@ const inquirer = require("inquirer");
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+const db = mysql.createConnection(
+  {
+    host: "localhost",
+    port: 3306,
+    user: "root",
+
+    password: "root",
+    database: "company_db",
+  },
+  console.log(`Connected to the company_db database.`)
+);
 //--------------------------------------------------------
 // Begins the CLI app to use choices from imported js file prompts
 //--------------------------------------------------------
@@ -58,28 +69,18 @@ function BeginApp() {
 }
 
 function allEmployees() {
-  db.query("SELECT e.id, e.first_name AS Name", (err,results) => {
+  db.query("SELECT * FROM employee", (err,results) => {
     if(err){
       console.log(err);
     } else {
-    console.table(results)
+    console.log('Current Employees', results)
     }
   })
   BeginApp()
 }
 
 // Connection to localhost company database with employee info.
-const db = mysql.createConnection(
-  {
-    host: "localhost",
 
-    user: "root",
-
-    password: "root",
-    database: "company_db",
-  },
-  console.log(`Connected to the company_db database.`)
-);
 
 //______________________
 // Adds a listener to port

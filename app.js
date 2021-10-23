@@ -41,6 +41,10 @@ function BeginApp() {
           console.log("Adding Employee");
           addEmployee();
           break;
+        case "Update Employee Role":
+          console.log("update role");
+          updateEmployeeRole();
+          break;
         case "View All Roles":
           console.log("Viewing all Roles");
           BeginApp();
@@ -90,41 +94,77 @@ function addEmployee() {
   db.query("SELECT title FROM roles", (err, results) => {
     console.log(results);
     if (err) throw err;
- 
-  inquirer
-    .prompt([
-      {
-        type: "input",
-        name: "first_name",
-        message: "First Name of the employee you wish to add?",
-      },
-      {
-        type: "input",
-        name: "last_name",
-        message: "Last name of the employee you wish to add?",
-      },
-      {
-        type: "list",
-        name: "role",
-        message: "Role of this employee?",
-        choices: function () {
-          let array = results.map(choice => choice.title)
-          return array;
-        }
-      },
-    // Takes user answers and then converts into a query for SQL to add to the employee data table.
-    ]).then((answers) => {
-      db.query(
-        `INSERT INTO employee(first_name, last_name, role_id) 
+
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          name: "first_name",
+          message: "First Name of the employee you wish to add?",
+        },
+        {
+          type: "input",
+          name: "last_name",
+          message: "Last name of the employee you wish to add?",
+        },
+        {
+          type: "list",
+          name: "role",
+          message: "Role of this employee?",
+          choices: function () {
+            let array = results.map((choice) => choice.title);
+            return array;
+          },
+        },
+        // Takes user answers and then converts into a query for SQL to add to the employee data table.
+      ])
+      .then((answers) => {
+        db.query(
+          `INSERT INTO employee(first_name, last_name, role_id) 
          VALUES('${answers.first_name}', '${answers.last_name}',
          (SELECT id FROM roles WHERE title = "${answers.role}"));`
-    )
-    })
-  
+        );
+      });
   });
 }
 
+function updateEmployeeRole() {
+  db.query(
+    "SELECT e.first_name FROM employee e ORDER BY e.id",
+    (err, results) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(results);
+      }
+      inquirer.prompt([
+        {
+          type: "list",
+          name: "employee",
+          message: "Which employee do you wish to update role for.",
+          choices: function () {
+            let array = results.map((choice) => choice.first_name);
+            return array;
+          },
+        },
+      ]);
+    }
+  );
+}
 
+function allRoles() {
+
+}
+
+function addRole() {
+
+}
+function viewAllDepartments() {
+
+}
+function addDepartment() {
+  
+}
 
 //______________________
 // Adds a listener to port

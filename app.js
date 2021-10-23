@@ -8,7 +8,9 @@ const inquirer = require("inquirer");
 // Express middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-
+//--------------------------------------------------------------------|
+//// Connection to localhost company database with data tables info..-|
+//--------------------------------------------------------------------|
 const db = mysql.createConnection(
   {
     host: "localhost",
@@ -67,11 +69,13 @@ function BeginApp() {
       }
     });
 }
-
+//------------------------------------------------------------------------|
+//Displays all the current employees and sorts them by employee id number.|
+//------------------------------------------------------------------------|
 function allEmployees() {
   db.query(
     `SELECT e.id, e.first_name AS "First Name", e.last_name AS "Last Name", r.title, d.name AS "Department", r.salary AS "Salary" FROM employee e
-  INNER JOIN roles r ON r.id = e.role_id INNER JOIN department d ON d.id = r.department_id;`,
+  INNER JOIN roles r ON r.id = e.role_id INNER JOIN department d ON d.id = r.department_id ORDER by e.id;`,
     (err, results) => {
       if (err) {
         console.log(err);
@@ -108,7 +112,7 @@ function addEmployee() {
           return array;
         }
       },
-      
+    // Takes user answers and then converts into a query for SQL to add to the employee data table.
     ]).then((answers) => {
       db.query(
         `INSERT INTO employee(first_name, last_name, role_id) 
@@ -120,7 +124,7 @@ function addEmployee() {
   });
 }
 
-// Connection to localhost company database with employee info.
+
 
 //______________________
 // Adds a listener to port

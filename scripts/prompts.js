@@ -15,35 +15,8 @@ module.exports = {
             
     
     ],
-    addEmployee : [
-        {
-            type: 'input',
-            name: 'first_name',
-            message: "First Name of the employee you wish to add?"
-
-        },
-        {
-            type: 'input',
-            name: 'last_name',
-            message: "Last name of the employee you wish to add?"
-        },
-        {
-            type: 'list',
-            name: 'title',
-            message: "Title of this employee?",
-            choices: () => answers.map(choice => choice.d.name)
-        },
-        {
-            type: 'input',
-            name: 'employee',
-            message: "Last name of the employee you wish to add?"
-        },
-        {
-            type: 'input',
-            name: 'employee',
-            message: "Last name of the employee you wish to add?"
-        },
-    ]
+    
+    
 
 
 

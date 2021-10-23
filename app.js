@@ -69,14 +69,15 @@ function BeginApp() {
 }
 
 function allEmployees() {
-  db.query("SELECT * FROM employee", (err,results) => {
+  db.query(`Select e.id, e.first_name as 'FIRST NAME', e.last_name AS 'LAST NAME' from employee e order by e.id`, (err,results) => {
     if(err){
       console.log(err);
     } else {
-    console.log('Current Employees', results)
+    console.table(results)
+    BeginApp()
     }
   })
-  BeginApp()
+  
 }
 
 // Connection to localhost company database with employee info.

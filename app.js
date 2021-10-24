@@ -5,6 +5,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const prompts = require("./scripts/prompts");
 const inquirer = require("inquirer");
+const { log } = require("console");
 // Express middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -90,6 +91,10 @@ function allEmployees() {
     }
   );
 }
+//----------------------------------------------------------------------------------------
+// Add employee function takes two inputs and then a choice from list of roles from SQL DB
+// ---------------------------------------------------------------------------------------
+
 function addEmployee() {
   db.query("SELECT title FROM roles", (err, results) => {
     console.log(results);
@@ -116,21 +121,27 @@ function addEmployee() {
             return array;
           },
         },
-        // Takes user answers and then converts into a query for SQL to add to the employee data table.
+        // Takes user answer and then converts into a query for SQL to add to the employee data table.
       ])
       .then((answers) => {
         db.query(
           `INSERT INTO employee(first_name, last_name, role_id) 
          VALUES('${answers.first_name}', '${answers.last_name}',
-         (SELECT id FROM roles WHERE title = "${answers.role}"));`
+         (SELECT id FROM roles WHERE title = "${answers.role}"));`,
+         BeginApp()
         );
       });
   });
 }
 
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------
+//First gives list of all employees first and last name, then after choice gives list of all roles that can be added then pushes it to database table employee.""
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 function updateEmployeeRole() {
   db.query(
-    "SELECT e.first_name FROM employee e ORDER BY e.id",
+    `SELECT DISTINCT concat( employee.last_name," ",employee.first_name) as 'Name', roles.title FROM employee JOIN roles ON employee.role_id = roles.id COUNT(1)`,
     (err, results) => {
       if (err) {
         console.log(err);
@@ -143,11 +154,23 @@ function updateEmployeeRole() {
           name: "employee",
           message: "Which employee do you wish to update role for.",
           choices: function () {
-            let array = results.map((choice) => choice.first_name);
+            let array = results.map((choice) => choice.Name);
             return array;
-          },
+          }
         },
-      ]);
+        {
+        type: "list",
+        name: "role",
+        message: "what role do you want to give this employee?",
+        choices: function () {
+          let array1 = results.map((choice) => choice.title);
+          return array1;
+        },
+      }
+      ]).then((answer) => {
+        db.query(`UPDATE employee `)
+        console.log(answer);
+      })
     }
   );
 }

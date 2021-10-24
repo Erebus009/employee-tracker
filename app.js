@@ -52,6 +52,9 @@ function BeginApp() {
         case "View All Roles":
           allRoles();
           break;
+        case "Remove Role":
+          removeRole();
+          break;
         case "View All Departments":
           console.log("Cya later");
           viewAllDepartments();
@@ -81,8 +84,9 @@ function BeginApp() {
 //------------------------------------------------------------------------|
 function allEmployees() {
   db.query(
-    `SELECT e.id, e.first_name AS "First Name", e.last_name AS "Last Name", r.title, d.name AS "Department", r.salary AS "Salary" FROM employee e
-  INNER JOIN roles r ON r.id = e.role_id INNER JOIN department d ON d.id = r.department_id ORDER by e.id;`,
+    `SELECT e.id, e.first_name AS "First Name", e.last_name AS "Last Name", r.title, d.name AS "Department", IFNULL(r.salary, 'No Data') AS "Salary", CONCAT(m.first_name," ",m.last_name) AS "Manager"FROM employee e  LEFT JOIN roles r  ON r.id = e.role_id 
+    LEFT JOIN department d 
+    ON d.id = r.department_id LEFT JOIN employee m ON m.id = e.manager_id ORDER BY e.id;`,
     (err, results) => {
       if (err) {
         console.log(err);
@@ -175,7 +179,8 @@ function updateEmployeeRole() {
             [answer.role, answer.last],
             (err, results) => {
               if (err) throw err;
-              console.log(results), BeginApp();
+              console.log(results), 
+              BeginApp();
             }
           );
         });
@@ -239,26 +244,50 @@ function removeEmployee() {
 }
 
 //========================================
-//same fucntion as addDepartment with jsut changes db.query paths
+//same function as addDepartment with only changes db.query paths
 //========================================
 function addRole(){
-  db.query('Select * from roles', (err,results) => {
+  db.query('Select * from department', (err,results) => {
     if (err){
       console.log(err);
     } else {
       console.table(results);
     }
-  })
+  
 
   inquirer.prompt([
     {
-      type 
-    }
+      type: 'input',
+      name: 'role',
+      message: 'What role do you wish to add to the company?'
+
+    },
+    {
+      type:'input',
+      name: 'salary',
+      message: 'What is the salary of this role?'
+    },
+    {
+      type: 'list',
+      name: 'department',
+      choices: () => {
+        let array = results.map((choices) => choices.name)
+        return array
+      }
+    },
   ]
-  )
-
+  ).then((answer) => {
+    db.query(`INSERT INTO roles(title,salary,department_id) VALUES('${answer.role}', '${answer.salary}', (Select id from department where name = "${answer.department}"))`, (err,results) => {
+      if(err){
+        console.log(err);
+      } else {
+        console.log(results);
+      }
+    
+    })
+  })
+})
 }
-
 
 //====================================================================================
 //Displays all departments then takes user input and adds it to the table using db.query

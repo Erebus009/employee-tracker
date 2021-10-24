@@ -46,12 +46,11 @@ function BeginApp() {
         case "Remove Employee":
           removeEmployee();
           break;
+        case "Add Role":
+          addRole();
+          break;
         case "View All Roles":
           allRoles();
-          break;
-        case "Add Role":
-          console.log("Add role to employee");
-          BeginApp();
           break;
         case "View All Departments":
           console.log("Cya later");
@@ -59,7 +58,7 @@ function BeginApp() {
           break;
         case "Add Department":
           console.log("Cya later");
-          BeginApp();
+          addDepartment();
           break;
         case "Quit":
           console.log("Cya later");
@@ -138,12 +137,12 @@ function addEmployee() {
 
 function updateEmployeeRole() {
   db.query(
-    `SELECT DISTINCT employee.last_name as 'last_name', roles.title FROM employee JOIN roles ON employee.role_id = roles.id`,
+    `SELECT DISTINCT employee.first_name as 'first', employee.last_name as 'last_name', roles.title FROM employee JOIN roles ON employee.role_id = roles.id`,
     (err, results) => {
       if (err) {
         console.log(err);
       } else {
-        console.log(results);
+        console.table(results);
       }
       inquirer
         .prompt([
@@ -229,11 +228,26 @@ function removeEmployee() {
       );
     });
 }
-function addRole() {
+
+function addRole(){
   
 }
+
+
+
+
+function addDepartment() {
+  inquirer.prompt([
+    {
+      type: 'input',
+      name: 'role',
+      message: 'Which role do you wish to add?'
+    }
+  ])
+
+}
 function viewAllDepartments() {}
-function addDepartment() {}
+
 
 //______________________
 // Adds a listener to port

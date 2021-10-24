@@ -56,19 +56,19 @@ function BeginApp() {
           removeRole();
           break;
         case "View All Departments":
-          console.log("Cya later");
+          
           viewAllDepartments();
           break;
         case "Add Department":
-          console.log("Cya later");
+          
           addDepartment();
           break;
         case "Remove Department":
-          console.log("Cya later");
+         
           removeDepartment();
           break;
         case "Quit":
-          console.log("Cya later");
+          console.log("Cya later! :)");
           break;
       }
       console.log(answers);
@@ -288,6 +288,43 @@ function addRole(){
   })
 })
 }
+//===============================
+//same as remove department function just removes role instead
+//===============================
+
+function removeRole(){
+  db.query(`SELECT * From roles`, (err,results) => {
+    if (err){
+      console.log(err);
+    } else {
+      console.table(results)
+    }
+    inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "name",
+        message: "Enter Id of the role that you you wish to remove?",
+      },
+    ])
+    .then((answer) => {
+      db.query(
+        `DELETE FROM roles Where ?`,
+        { id: answer.name },
+        (err, results) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.table(results);
+          }
+          BeginApp();
+        }
+      );
+    });
+})
+}
+
+
 
 //====================================================================================
 //Displays all departments then takes user input and adds it to the table using db.query

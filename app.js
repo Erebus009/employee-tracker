@@ -48,7 +48,7 @@ function BeginApp() {
           break;
         case "View All Roles":
           console.log("Viewing all Roles");
-          BeginApp();
+          allRoles();
           break;
         case "Add Role":
           console.log("Add role to employee");
@@ -178,8 +178,14 @@ function updateEmployeeRole() {
         })
     });
 }
+//------------------------------------------------------
+// Displays names and current roles of all the employees
+//------------------------------------------------------
+function allRoles() {
+  db.query(`select  concat(e.first_name," ",e.last_name) as 'Full Employee Name',roles.title from employee e join roles on e.role_id = roles.id`)
 
-function allRoles() {}
+
+}
 
 function addRole() {}
 function viewAllDepartments() {}

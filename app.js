@@ -182,7 +182,14 @@ function updateEmployeeRole() {
 // Displays names and current roles of all the employees
 //------------------------------------------------------
 function allRoles() {
-  db.query(`select  concat(e.first_name," ",e.last_name) as 'Full Employee Name',roles.title from employee e join roles on e.role_id = roles.id`)
+  db.query(`select  concat(e.first_name," ",e.last_name) as 'Full Employee Name',roles.title from employee e join roles on e.role_id = roles.id`, (err,results) => {
+    if(err){
+      console.log(err);
+    } else {
+      console.table(results);
+      BeginApp()
+    }
+  })
 
 
 }

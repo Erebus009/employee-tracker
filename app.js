@@ -145,12 +145,13 @@ function addEmployee() {
 
 function updateEmployeeRole() {
   db.query(
-    `SELECT DISTINCT employee.first_name as 'first', employee.last_name as 'last_name', roles.title FROM employee JOIN roles ON employee.role_id = roles.id`,
+    `SELECT concat(e.first_name," ",e.last_name) as 'Name' from employee e; Select title from roles as 'title'`,
     (err, results) => {
       if (err) {
         console.log(err);
       } else {
         console.table(results);
+        console.log(results);
       }
       inquirer
         .prompt([
@@ -159,7 +160,8 @@ function updateEmployeeRole() {
             name: "last",
             message: "Which employee do you wish to update role for.",
             choices: function () {
-              let array = results.map((choice) => choice.last_name);
+              let array = results.map((choice) => choice.Name);
+              console.log(array);
               return array;
             },
           },
@@ -168,8 +170,8 @@ function updateEmployeeRole() {
             name: "role",
             message: "what role do you want to give this employee?",
             choices: function () {
-              let array1 = results.map((choice) => choice.title);
-              return array1;
+              let array = results.map((choice) => choice.title);
+              return array;
             },
           },
         ])

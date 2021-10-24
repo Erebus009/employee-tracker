@@ -128,7 +128,7 @@ function addEmployee() {
           `INSERT INTO employee(first_name, last_name, role_id) 
          VALUES('${answers.first_name}', '${answers.last_name}',
          (SELECT id FROM roles WHERE title = "${answers.role}"));`,
-         BeginApp()
+          BeginApp()
         );
       });
   });
@@ -138,56 +138,52 @@ function addEmployee() {
 //First gives list of all employees first and last name, then after choice gives list of all roles that can be added then pushes it to database table employee.""
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
 function updateEmployeeRole() {
   db.query(
-    `SELECT DISTINCT concat( employee.last_name," ",employee.first_name) as 'Name', roles.title FROM employee JOIN roles ON employee.role_id = roles.id COUNT(1)`,
+    `SELECT DISTINCT employee.last_name as 'last_name', roles.title FROM employee JOIN roles ON employee.role_id = roles.id`,
     (err, results) => {
       if (err) {
         console.log(err);
       } else {
         console.log(results);
       }
-      inquirer.prompt([
-        {
-          type: "list",
-          name: "employee",
-          message: "Which employee do you wish to update role for.",
-          choices: function () {
-            let array = results.map((choice) => choice.Name);
-            return array;
-          }
-        },
-        {
-        type: "list",
-        name: "role",
-        message: "what role do you want to give this employee?",
-        choices: function () {
-          let array1 = results.map((choice) => choice.title);
-          return array1;
-        },
-      }
-      ]).then((answer) => {
-        db.query(`UPDATE employee `)
-        console.log(answer);
-      })
-    }
-  );
+      inquirer
+        .prompt([
+          {
+            type: "list",
+            name: "last",
+            message: "Which employee do you wish to update role for.",
+            choices: function () {
+              let array = results.map((choice) => choice.last_name);
+              return array;
+            },
+          },
+          {
+            type: "list",
+            name: "role",
+            message: "what role do you want to give this employee?",
+            choices: function () {
+              let array1 = results.map((choice) => choice.title);
+              return array1;
+            },
+          },
+        ]).then((answer) => {
+            db.query(`UPDATE employee SET role_id = (SELECT id FROM roles WHERE title = ?) Where id = (Select id from(Select id from employee WHERE last_name = ?) AS tmptable)`, [answer.role, answer.last], 
+            (err,results) => {
+              if(err) throw err
+              console.log(results),
+              BeginApp()
+            })
+
+        })
+    });
 }
 
-function allRoles() {
+function allRoles() {}
 
-}
-
-function addRole() {
-
-}
-function viewAllDepartments() {
-
-}
-function addDepartment() {
-  
-}
+function addRole() {}
+function viewAllDepartments() {}
+function addDepartment() {}
 
 //______________________
 // Adds a listener to port

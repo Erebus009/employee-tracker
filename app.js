@@ -282,6 +282,7 @@ function addRole(){
         console.log(err);
       } else {
         console.log(results);
+        BeginApp();
       }
     
     })

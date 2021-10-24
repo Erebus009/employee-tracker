@@ -60,6 +60,10 @@ function BeginApp() {
           console.log("Cya later");
           addDepartment();
           break;
+        case "Remove Department":
+          console.log("Cya later");
+          removeDepartment();
+          break;
         case "Quit":
           console.log("Cya later");
           break;
@@ -179,11 +183,11 @@ function updateEmployeeRole() {
   );
 }
 //------------------------------------------------------
-// Displays names and current roles of all the employees
+// Displays all current roles in the company
 //------------------------------------------------------
 function allRoles() {
   db.query(
-    `select  concat(e.first_name," ",e.last_name) as 'Full Employee Name',roles.title from employee e join roles on e.role_id = roles.id`,
+    `select * from roles order by department_id`,
     (err, results) => {
       if (err) {
         console.log(err);
@@ -235,16 +239,30 @@ function removeEmployee() {
 }
 
 //========================================
-//
+//same fucntion as addDepartment with jsut changes db.query paths
 //========================================
 function addRole(){
+  db.query('Select * from roles', (err,results) => {
+    if (err){
+      console.log(err);
+    } else {
+      console.table(results);
+    }
+  })
+
+  inquirer.prompt([
+    {
+      type 
+    }
+  ]
+  )
 
 }
 
 
-//========================================
-//
-//========================================
+//====================================================================================
+//Displays all departments then takes user input and adds it to the table using db.query
+//====================================================================================
 
 
 function addDepartment() {
@@ -289,6 +307,41 @@ function viewAllDepartments() {
 
 
 }
+//=============================================
+//Using the same fucntion as remove employee going to remove department from list by it's id from user input
+//=============================================
+function removeDepartment(){
+  db.query(`SELECT * From department`, (err,results) => {
+    if (err){
+      console.log(err);
+    } else {
+      console.table(results)
+    }
+    inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "name",
+        message: "Enter Id of the department that you you wish to remove?",
+      },
+    ])
+    .then((answer) => {
+      db.query(
+        `DELETE FROM department Where ?`,
+        { id: answer.name },
+        (err, results) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.table(results);
+          }
+          BeginApp();
+        }
+      );
+    });
+})
+}
+
 
 
 //______________________

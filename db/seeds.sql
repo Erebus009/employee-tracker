@@ -15,8 +15,8 @@ VALUES
 ('Full stack developer', 67000, 2),
 ('QA tester', 72000, 4),
 ('Warehouse Driver', 30000, 3),
-('Accountant', 47000, 6),
-('Tech Lead', 89000, 7);
+('Accountant', 47000, 5),
+('Tech Lead', 89000, 6);
 
 INSERT INTO employee(first_name, last_name, role_id) 
 VALUES

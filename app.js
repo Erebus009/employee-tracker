@@ -35,19 +35,18 @@ function BeginApp() {
       //----------------------------------------------------------------------
       switch (answers.program) {
         case "View All Employees":
-          console.log("List of all employees");
           allEmployees();
           break;
         case "Add Employee":
-          console.log("Adding Employee");
           addEmployee();
           break;
         case "Update Employee Role":
-          console.log("update role");
           updateEmployeeRole();
           break;
+        case "Remove Employee":
+          removeEmployee();
+          break;
         case "View All Roles":
-          console.log("Viewing all Roles");
           allRoles();
           break;
         case "Add Role":
@@ -97,7 +96,6 @@ function allEmployees() {
 
 function addEmployee() {
   db.query("SELECT title FROM roles", (err, results) => {
-    console.log(results);
     if (err) throw err;
 
     inquirer
@@ -167,34 +165,73 @@ function updateEmployeeRole() {
               return array1;
             },
           },
-        ]).then((answer) => {
-            db.query(`UPDATE employee SET role_id = (SELECT id FROM roles WHERE title = ?) Where id = (Select id from(Select id from employee WHERE last_name = ?) AS tmptable)`, [answer.role, answer.last], 
-            (err,results) => {
-              if(err) throw err
-              console.log(results),
-              BeginApp()
-            })
-
-        })
-    });
+        ])
+        .then((answer) => {
+          db.query(
+            `UPDATE employee SET role_id = (SELECT id FROM roles WHERE title = ?) Where id = (Select id from(Select id from employee WHERE last_name = ?) AS tmptable)`,
+            [answer.role, answer.last],
+            (err, results) => {
+              if (err) throw err;
+              console.log(results), BeginApp();
+            }
+          );
+        });
+    }
+  );
 }
 //------------------------------------------------------
 // Displays names and current roles of all the employees
 //------------------------------------------------------
 function allRoles() {
-  db.query(`select  concat(e.first_name," ",e.last_name) as 'Full Employee Name',roles.title from employee e join roles on e.role_id = roles.id`, (err,results) => {
-    if(err){
-      console.log(err);
-    } else {
-      console.table(results);
-      BeginApp()
+  db.query(
+    `select  concat(e.first_name," ",e.last_name) as 'Full Employee Name',roles.title from employee e join roles on e.role_id = roles.id`,
+    (err, results) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.table(results);
+        BeginApp();
+      }
     }
-  })
-
-
+  );
 }
-
-function addRole() {}
+function removeEmployee() {
+  db.query(
+    `select  e.id, concat(e.first_name," ",e.last_name) as 'Full Employee Name',roles.title from employee e join roles on e.role_id = roles.id`,
+    (err, results) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.table(results);
+      }
+    }
+  );
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "name",
+        message: "Enter Id of the employee that you you wish to remove?",
+      },
+    ])
+    .then((answer) => {
+      db.query(
+        `DELETE FROM employee Where ?`,
+        { id: answer.name },
+        (err, results) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.table(results);
+          }
+          BeginApp();
+        }
+      );
+    });
+}
+function addRole() {
+  
+}
 function viewAllDepartments() {}
 function addDepartment() {}
 

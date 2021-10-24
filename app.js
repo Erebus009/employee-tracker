@@ -54,7 +54,7 @@ function BeginApp() {
           break;
         case "View All Departments":
           console.log("Cya later");
-          BeginApp();
+          viewAllDepartments();
           break;
         case "Add Department":
           console.log("Cya later");
@@ -230,7 +230,7 @@ function removeEmployee() {
 }
 
 function addRole(){
-  
+
 }
 
 
@@ -241,12 +241,24 @@ function addDepartment() {
     {
       type: 'input',
       name: 'role',
-      message: 'Which role do you wish to add?'
+      message: 'Which department do you wish to add?'
     }
   ])
 
 }
-function viewAllDepartments() {}
+function viewAllDepartments() {
+  db.query(`SELECT * From department`, (err,results) => {
+    if (err){
+      console.log(err);
+    } else {
+      console.table(results)
+      BeginApp();
+    }
+  })
+
+
+
+}
 
 
 //______________________

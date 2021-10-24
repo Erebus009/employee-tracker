@@ -194,6 +194,11 @@ function allRoles() {
     }
   );
 }
+//----------------------------------------------------------------||||
+// removes employee based on employee id from database using user input value {example: user inputs 5, employee with id 5 is removed.}
+//----------------------------------------------------------------||||
+
+
 function removeEmployee() {
   db.query(
     `select  e.id, concat(e.first_name," ",e.last_name) as 'Full Employee Name',roles.title from employee e join roles on e.role_id = roles.id`,
@@ -229,23 +234,48 @@ function removeEmployee() {
     });
 }
 
+//========================================
+//
+//========================================
 function addRole(){
 
 }
 
 
+//========================================
+//
+//========================================
 
 
 function addDepartment() {
+    db.query(`SELECT * from department`,(err,results) => {
+      if(err){
+        console.log(err);
+      }else{
+        console.table(results);
+      }
+    })
+
+
   inquirer.prompt([
     {
       type: 'input',
-      name: 'role',
+      name: 'department',
       message: 'Which department do you wish to add?'
     }
-  ])
+  ]).then((answer) => {
+    db.query(
+      `INSERT INTO department(name) VALUES(?)`, answer.department)
+     BeginApp()
+
+  })
 
 }
+//==============================================================
+// Takes department table and displays it as a console.table log 
+//==============================================================
+
+
 function viewAllDepartments() {
   db.query(`SELECT * From department`, (err,results) => {
     if (err){

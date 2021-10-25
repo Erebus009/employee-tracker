@@ -6,6 +6,7 @@ const PORT = process.env.PORT || 3000;
 const prompts = require("./scripts/prompts");
 const inquirer = require("inquirer");
 const { log } = require("console");
+const fig = require("figlet");
 // Express middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -23,6 +24,9 @@ const db = mysql.createConnection(
   },
   console.log(`Connected to the company_db database.`)
 );
+
+BeginApp();
+
 //--------------------------------------------------------
 // Begins the CLI app to use choices from imported js file prompts
 //--------------------------------------------------------
@@ -36,6 +40,7 @@ function BeginApp() {
       switch (answers.program) {
         case "View All Employees":
           allEmployees();
+
           break;
         case "Add Employee":
           addEmployee();
@@ -68,11 +73,11 @@ function BeginApp() {
           console.log("Cya later! :)");
           break;
       }
-      console.log(answers);
     })
     .catch((error) => {
       if (error) {
         console.log(error);
+      } else {
       }
     });
 }
@@ -139,83 +144,76 @@ function addEmployee() {
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------
 //First gives list of all employees first and last name with id , then after choice gives list of all roles that can be added then pushes it to database table employee.""
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------
-function getEmployeeID(){
- db.query(`select e.id,  concat(e.first_name," ",e.last_name) as "Full name" from employee e`, (err,results)=>{
-    if(err){
-      console.log(err);
-    } else {
-      console.table(results);
-    }
-  })
-  return ([
-    {
-        name: "ID",
-        type: "input",
-        message: "What is employee id do you want to update?",
-        
-    }
-]);
-}
-
-  
-  
-
-      
-        
- 
-
-
-
-
-
-async function updateEmployeeRole() {
-const ID = await inquirer.prompt((getEmployeeID()))
-console.log(Object.values(ID));
-
-
-  db.query(`Select title from roles`,
+function getEmployeeID() {
+  db.query(
+    `select e.id,  concat(e.first_name," ",e.last_name) as "Full name" from employee e`,
     (err, results) => {
       if (err) {
         console.log(err);
       } else {
         console.table(results);
-        console.log(results);
       }
-      inquirer.prompt([
+    }
+  );
+  return [
+    {
+      name: "ID",
+      type: "input",
+      message: "What is employee id do you want to update?",
+    },
+  ];
+}
+
+//====================================================================================================================
+// Takes in user inputted id from getemployeeID function then displays list of all roles to choose from then updates employee role with chosen role and macthes employee ID
+//------------------------===========================================================================================
+
+async function updateEmployeeRole() {
+  const ID = await inquirer.prompt(getEmployeeID());
+  console.log(Object.values(ID));
+
+  db.query(`Select title from roles`, (err, results) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.table(results);
+      console.log(results);
+    }
+    inquirer
+      .prompt([
         {
           type: "list",
           name: "role",
           message: "What role do you want for this Employee?",
           choices: function () {
             let array = results.map((choice) => choice.title);
-            return array
+            return array;
           },
         },
-      ]).then((answer) => {
-
-        db.query(`Update employee e
+      ])
+      .then((answer) => {
+        db.query(
+          `Update employee e
         set role_id = (Select id from roles where title = '${answer.role}' )
-        Where e.id = ${Object.values(ID)}`
-        ,(err,results) => {
-          if(err){
-            console.log(err);
-          }else{
-            console.log(results);
+        Where e.id = ${Object.values(ID)}`,
+          (err, results) => {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log(results);
+            }
           }
-        })
-        
+        );
+
         BeginApp();
-
-
-      })
-    }
-  );
+      });
+  });
 }
 //------------------------------------------------------
 // Displays all current roles in the company
 //------------------------------------------------------
 function allRoles() {
-  db.query(`select * from roles order by department_id`, (err, results) => {
+  db.query(`SELECT title AS "Title" FROM roles `, (err, results) => {
     if (err) {
       console.log(err);
     } else {
@@ -426,4 +424,4 @@ function removeDepartment() {
 //_______________________
 app.listen(PORT, () => {});
 
-BeginApp();
+

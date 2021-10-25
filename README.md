@@ -25,7 +25,7 @@
   ## Installation
   <code>n/a</code>
   ## Usage
-  <code>Using up and down arrows keys inside the command line interface you can pick many options to change the databse in MYsql from VScode CLI.</code>
+  Using up and down arrows keys inside the command line interface you can pick many options to change the databse in MYsql from VScode CLI.
   
   ## Tests
   <code>npm test</code>

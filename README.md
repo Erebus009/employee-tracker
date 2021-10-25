@@ -23,7 +23,11 @@
   * [Questions](#Questions)
 
   ## Installation
-  <code>n/a</code>
+      git clone git@github.com:Erebus009/employee-tracker.git
+      npm i
+      npm start
+  
+  
   ## Usage
   Using up and down arrows keys inside the command line interface you can pick many options to change the database in mySQL from VScode terminal.
   

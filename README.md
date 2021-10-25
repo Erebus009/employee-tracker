@@ -29,7 +29,7 @@
   
   
   ## Usage
-  Using up and down arrows keys inside the command line interface you can pick many options to change the database in mySQL from VScode terminal.
+  Using up and down arrows keys inside the command line interface you can pick many options to change the database in mySQL from  terminal.
   
   ## Tests
   <code>npm test</code>

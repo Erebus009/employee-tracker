@@ -9,7 +9,7 @@ module.exports = {
             type:"list",
             name: 'program',
             message : 'What would you like to do?',
-            choices: ['View All Employees','Add Employee','Update Employee Role','Remove Employee','View All Roles','Add Role','Remove Role','View All Departments','Add Department','Remove Department','Quit'],
+            choices: ['View All Departments','View All Employees','View All Roles','Add A Department','Add A Role','Add An Employee','Update Employee Role','Remove Role','Remove Employee','Remove Department','Quit'],
         }
         
             

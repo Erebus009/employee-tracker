@@ -6,10 +6,11 @@ const PORT = process.env.PORT || 3000;
 const prompts = require("./scripts/prompts");
 const inquirer = require("inquirer");
 const { log } = require("console");
-const fig = require("figlet");
+const figlet = require("figlet");
 // Express middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+
 //--------------------------------------------------------------------|
 //// Connection to localhost company database with data tables info..-|
 //--------------------------------------------------------------------|
@@ -25,12 +26,16 @@ const db = mysql.createConnection(
   console.log(`Connected to the company_db database.`)
 );
 
+
 BeginApp();
 
 //--------------------------------------------------------
 // Begins the CLI app to use choices from imported js file prompts
 //--------------------------------------------------------
 function BeginApp() {
+  
+  
+  
   inquirer
     .prompt(prompts.interfaceChoices)
     .then((answers) => {
@@ -40,9 +45,9 @@ function BeginApp() {
       switch (answers.program) {
         case "View All Employees":
           allEmployees();
-
+          employeeASCII()
           break;
-        case "Add Employee":
+        case "Add An Employee":
           addEmployee();
           break;
         case "Update Employee Role":
@@ -51,7 +56,7 @@ function BeginApp() {
         case "Remove Employee":
           removeEmployee();
           break;
-        case "Add Role":
+        case "Add A Role":
           addRole();
           break;
         case "View All Roles":
@@ -81,10 +86,25 @@ function BeginApp() {
       }
     });
 }
+
+
+function employeeASCII() {
+  figlet(" Employee Tracker ", { font: "doom" }, function (err, tracker) {
+    if (err) {
+      console.log("Something went wrong...");
+      console.dir(err);
+      return;
+    }
+    console.log(tracker);
+  });
+}
+
+
 //------------------------------------------------------------------------|
 //Displays all the current employees and sorts them by employee id number.|
 //------------------------------------------------------------------------|
 function allEmployees() {
+  
   db.query(
     `SELECT e.id, e.first_name AS "First Name", e.last_name AS "Last Name", r.title, d.name AS "Department", IFNULL(r.salary, 'No Data') AS "Salary", CONCAT(m.first_name," ",m.last_name) AS "Manager"FROM employee e  LEFT JOIN roles r  ON r.id = e.role_id 
     LEFT JOIN department d 
@@ -213,7 +233,7 @@ async function updateEmployeeRole() {
 // Displays all current roles in the company
 //------------------------------------------------------
 function allRoles() {
-  db.query(`SELECT title AS "Employee Roles" FROM roles `, (err, results) => {
+  db.query(`SELECT title AS "Title" FROM roles `, (err, results) => {
     if (err) {
       console.log(err);
     } else {
@@ -423,5 +443,4 @@ function removeDepartment() {
 // Adds a listener to port
 //_______________________
 app.listen(PORT, () => {});
-
 

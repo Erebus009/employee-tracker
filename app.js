@@ -56,15 +56,12 @@ function BeginApp() {
           removeRole();
           break;
         case "View All Departments":
-          
           viewAllDepartments();
           break;
         case "Add Department":
-          
           addDepartment();
           break;
         case "Remove Department":
-         
           removeDepartment();
           break;
         case "Quit":
@@ -140,12 +137,43 @@ function addEmployee() {
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------
-//First gives list of all employees first and last name, then after choice gives list of all roles that can be added then pushes it to database table employee.""
+//First gives list of all employees first and last name with id , then after choice gives list of all roles that can be added then pushes it to database table employee.""
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+function getEmployeeID(){
+ db.query(`select e.id,  concat(e.first_name," ",e.last_name) as "Full name" from employee e`, (err,results)=>{
+    if(err){
+      console.log(err);
+    } else {
+      console.table(results);
+    }
+  })
+  return ([
+    {
+        name: "ID",
+        type: "input",
+        message: "What is employee id do you want to update?",
+        
+    }
+]);
+}
 
-function updateEmployeeRole() {
-  db.query(
-    `SELECT concat(e.first_name," ",e.last_name) as 'Name' from employee e; Select title from roles as 'title'`,
+  
+  
+
+      
+        
+ 
+
+
+
+
+
+async function updateEmployeeRole() {
+const ID = await inquirer.prompt((getEmployeeID()))
+console.log(Object.values(ID));
+
+
+  db.query(`Select title from roles`,
     (err, results) => {
       if (err) {
         console.log(err);
@@ -153,39 +181,33 @@ function updateEmployeeRole() {
         console.table(results);
         console.log(results);
       }
-      inquirer
-        .prompt([
-          {
-            type: "list",
-            name: "last",
-            message: "Which employee do you wish to update role for.",
-            choices: function () {
-              let array = results.map((choice) => choice.Name);
-              console.log(array);
-              return array;
-            },
+      inquirer.prompt([
+        {
+          type: "list",
+          name: "role",
+          message: "What role do you want for this Employee?",
+          choices: function () {
+            let array = results.map((choice) => choice.title);
+            return array
           },
-          {
-            type: "list",
-            name: "role",
-            message: "what role do you want to give this employee?",
-            choices: function () {
-              let array = results.map((choice) => choice.title);
-              return array;
-            },
-          },
-        ])
-        .then((answer) => {
-          db.query(
-            `UPDATE employee SET role_id = (SELECT id FROM roles WHERE title = ?) Where id = (Select id from(Select id from employee WHERE last_name = ?) AS tmptable)`,
-            [answer.role, answer.last],
-            (err, results) => {
-              if (err) throw err;
-              console.log(results), 
-              BeginApp();
-            }
-          );
-        });
+        },
+      ]).then((answer) => {
+
+        db.query(`Update employee e
+        set role_id = (Select id from roles where title = '${answer.role}' )
+        Where e.id = ${Object.values(ID)}`
+        ,(err,results) => {
+          if(err){
+            console.log(err);
+          }else{
+            console.log(results);
+          }
+        })
+        
+        BeginApp();
+
+
+      })
     }
   );
 }
@@ -193,22 +215,18 @@ function updateEmployeeRole() {
 // Displays all current roles in the company
 //------------------------------------------------------
 function allRoles() {
-  db.query(
-    `select * from roles order by department_id`,
-    (err, results) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.table(results);
-        BeginApp();
-      }
+  db.query(`select * from roles order by department_id`, (err, results) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.table(results);
+      BeginApp();
     }
-  );
+  });
 }
 //----------------------------------------------------------------||||
 // removes employee based on employee id from database using user input value {example: user inputs 5, employee with id 5 is removed.}
 //----------------------------------------------------------------||||
-
 
 function removeEmployee() {
   db.query(
@@ -248,170 +266,160 @@ function removeEmployee() {
 //========================================
 //same function as addDepartment with only changes db.query paths
 //========================================
-function addRole(){
-  db.query('Select * from department', (err,results) => {
-    if (err){
+function addRole() {
+  db.query("Select * from department", (err, results) => {
+    if (err) {
       console.log(err);
     } else {
       console.table(results);
     }
-  
 
-  inquirer.prompt([
-    {
-      type: 'input',
-      name: 'role',
-      message: 'What role do you wish to add to the company?'
-
-    },
-    {
-      type:'input',
-      name: 'salary',
-      message: 'What is the salary of this role?'
-    },
-    {
-      type: 'list',
-      name: 'department',
-      choices: () => {
-        let array = results.map((choices) => choices.name)
-        return array
-      }
-    },
-  ]
-  ).then((answer) => {
-    db.query(`INSERT INTO roles(title,salary,department_id) VALUES('${answer.role}', '${answer.salary}', (Select id from department where name = "${answer.department}"))`, (err,results) => {
-      if(err){
-        console.log(err);
-      } else {
-        console.log(results);
-        BeginApp();
-      }
-    
-    })
-  })
-})
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          name: "role",
+          message: "What role do you wish to add to the company?",
+        },
+        {
+          type: "input",
+          name: "salary",
+          message: "What is the salary of this role?",
+        },
+        {
+          type: "list",
+          name: "department",
+          choices: () => {
+            let array = results.map((choices) => choices.name);
+            return array;
+          },
+        },
+      ])
+      .then((answer) => {
+        db.query(
+          `INSERT INTO roles(title,salary,department_id) VALUES('${answer.role}', '${answer.salary}', (Select id from department where name = "${answer.department}"))`,
+          (err, results) => {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log(results);
+              BeginApp();
+            }
+          }
+        );
+      });
+  });
 }
 //===============================
 //same as remove department function just removes role instead
 //===============================
 
-function removeRole(){
-  db.query(`SELECT * From roles`, (err,results) => {
-    if (err){
+function removeRole() {
+  db.query(`SELECT * From roles`, (err, results) => {
+    if (err) {
       console.log(err);
     } else {
-      console.table(results)
+      console.table(results);
     }
     inquirer
-    .prompt([
-      {
-        type: "input",
-        name: "name",
-        message: "Enter Id of the role that you you wish to remove?",
-      },
-    ])
-    .then((answer) => {
-      db.query(
-        `DELETE FROM roles Where ?`,
-        { id: answer.name },
-        (err, results) => {
-          if (err) {
-            console.log(err);
-          } else {
-            console.table(results);
+      .prompt([
+        {
+          type: "input",
+          name: "name",
+          message: "Enter Id of the role that you you wish to remove?",
+        },
+      ])
+      .then((answer) => {
+        db.query(
+          `DELETE FROM roles Where ?`,
+          { id: answer.name },
+          (err, results) => {
+            if (err) {
+              console.log(err);
+            } else {
+              console.table(results);
+            }
+            BeginApp();
           }
-          BeginApp();
-        }
-      );
-    });
-})
+        );
+      });
+  });
 }
-
-
 
 //====================================================================================
 //Displays all departments then takes user input and adds it to the table using db.query
 //====================================================================================
 
-
 function addDepartment() {
-    db.query(`SELECT * from department`,(err,results) => {
-      if(err){
-        console.log(err);
-      }else{
-        console.table(results);
-      }
-    })
-
-
-  inquirer.prompt([
-    {
-      type: 'input',
-      name: 'department',
-      message: 'Which department do you wish to add?'
-    }
-  ]).then((answer) => {
-    db.query(
-      `INSERT INTO department(name) VALUES(?)`, answer.department)
-     BeginApp()
-
-  })
-
-}
-//==============================================================
-// Takes department table and displays it as a console.table log 
-//==============================================================
-
-
-function viewAllDepartments() {
-  db.query(`SELECT * From department`, (err,results) => {
-    if (err){
+  db.query(`SELECT * from department`, (err, results) => {
+    if (err) {
       console.log(err);
     } else {
-      console.table(results)
+      console.table(results);
+    }
+  });
+
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "department",
+        message: "Which department do you wish to add?",
+      },
+    ])
+    .then((answer) => {
+      db.query(`INSERT INTO department(name) VALUES(?)`, answer.department);
+      BeginApp();
+    });
+}
+//==============================================================
+// Takes department table and displays it as a console.table log
+//==============================================================
+
+function viewAllDepartments() {
+  db.query(`SELECT * From department`, (err, results) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.table(results);
       BeginApp();
     }
-  })
-
-
-
+  });
 }
 //=============================================
 //Using the same fucntion as remove employee going to remove department from list by it's id from user input
 //=============================================
-function removeDepartment(){
-  db.query(`SELECT * From department`, (err,results) => {
-    if (err){
+function removeDepartment() {
+  db.query(`SELECT * From department`, (err, results) => {
+    if (err) {
       console.log(err);
     } else {
-      console.table(results)
+      console.table(results);
     }
     inquirer
-    .prompt([
-      {
-        type: "input",
-        name: "name",
-        message: "Enter Id of the department that you you wish to remove?",
-      },
-    ])
-    .then((answer) => {
-      db.query(
-        `DELETE FROM department Where ?`,
-        { id: answer.name },
-        (err, results) => {
-          if (err) {
-            console.log(err);
-          } else {
-            console.table(results);
+      .prompt([
+        {
+          type: "input",
+          name: "name",
+          message: "Enter Id of the department that you you wish to remove?",
+        },
+      ])
+      .then((answer) => {
+        db.query(
+          `DELETE FROM department Where ?`,
+          { id: answer.name },
+          (err, results) => {
+            if (err) {
+              console.log(err);
+            } else {
+              console.table(results);
+            }
+            BeginApp();
           }
-          BeginApp();
-        }
-      );
-    });
-})
+        );
+      });
+  });
 }
-
-
 
 //______________________
 // Adds a listener to port

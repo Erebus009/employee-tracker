@@ -213,7 +213,7 @@ async function updateEmployeeRole() {
 // Displays all current roles in the company
 //------------------------------------------------------
 function allRoles() {
-  db.query(`SELECT title AS "Title" FROM roles `, (err, results) => {
+  db.query(`SELECT title AS "Employee Roles" FROM roles `, (err, results) => {
     if (err) {
       console.log(err);
     } else {

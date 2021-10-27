@@ -24,8 +24,9 @@
 
   ## Installation
       git clone git@github.com:Erebus009/employee-tracker.git
+      cd employee-tracker
       npm i
-      npm start
+      node app
   
   
   ## Usage
